@@ -7,7 +7,8 @@ Communication communication;
 class pidPrams {
   // ---パラメータ---
   // 個々の車両によって変化させる。
-  double r;  // 車輪の半径(cm)
+  int id;  // trainId
+  double r;  // 車輪の半径 [cm]
   int INPUT_MIN;  // 動き出すギリギリのinput
   int INPUT_MAX;
   int INPUT_START;  // 初動input
@@ -15,7 +16,8 @@ class pidPrams {
   double ki;
   double kd;
 
-  pidPrams(double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd) {
+  pidPrams(int id, double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd) {
+    this.id = id;
     this.r = r;
     this.INPUT_MIN = INPUT_MIN;
     this.INPUT_MAX = INPUT_MAX;
@@ -23,6 +25,14 @@ class pidPrams {
     this.kp = kp;
     this.ki = ki;
     this.kd = kd;
+  }
+  pidPrams getById(int id) {
+    for (pidPrams p : all) {
+      if (p.id == id) {
+        return p;
+      }
+    }
+    return null;
   }
 }
 
@@ -76,7 +86,7 @@ void draw() {
     TrainSignal trainSignal = communication.receiveTrainSignal();
     int id = trainSignal.trainId;
     Train train = state.trainList.get(id);
-    double delta = state.parameterList.get(id).r;
+    double delta = pidPrams.getById(id).r;
     MoveResult moveResult = train.move(delta);
     println(time + " RECEIVE train=" + id + ", delta=" + delta);
     timetableUpdate(train, moveResult);
