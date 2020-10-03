@@ -3,6 +3,29 @@ Timetable timetable;
 Display display;
 Communication communication;
 
+
+class pidPrams {
+  // ---パラメータ---
+  // 個々の車両によって変化させる。
+  double r;  // 車輪の半径(cm)
+  int INPUT_MIN;  // 動き出すギリギリのinput
+  int INPUT_MAX;
+  int INPUT_START;  // 初動input
+  double kp;
+  double ki;
+  double kd;
+
+  pidPrams(double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd) {
+    this.r = r;
+    this.INPUT_MIN = INPUT_MIN;
+    this.INPUT_MAX = INPUT_MAX;
+    this.INPUT_START = INPUT_START;
+    this.kp = kp;
+    this.ki = ki;
+    this.kd = kd;
+  }
+}
+
 void settings() {
   size(1000, 500);
 
