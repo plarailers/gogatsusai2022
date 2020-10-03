@@ -19,7 +19,6 @@ void setup() {
   while (communication.availableTrainSignal() > 0) {  // 各列車について行う
     TrainSignal trainSignal = communication.receiveTrainSignal();  // 列車id取得
     int id = trainSignal.trainId;
-    double delta = trainSignal.delta;
     state.trainList.get(id).id = id;  // 当該列車を取得
   }
 }
@@ -35,7 +34,7 @@ void draw() {
     // MoveResult moveResult = state.trainList.get(train.id).move(targetSpeed);  // 適当な距離進ませる
     // timetableUpdate(train, moveResult);  // 時刻表を更新する
     communication.sendInput(train.id, targetSpeed);
-    println(time + " SEND train=" + train.id + ", speed=" + targetSpeed);
+    println(time + " SEND train=" + train.id + ", input=" + targetSpeed);
   }
 
   // 各ポイントについて行う
@@ -53,8 +52,8 @@ void draw() {
   while (communication.availableTrainSignal() > 0) {
     TrainSignal trainSignal = communication.receiveTrainSignal();
     int id = trainSignal.trainId;
-    int delta = trainSignal.delta;
     Train train = state.trainList.get(id);
+    double delta = state.parameterList.get(id).r;
     MoveResult moveResult = train.move(delta);
     println(time + " RECEIVE train=" + id + ", delta=" + delta);
     timetableUpdate(train, moveResult);

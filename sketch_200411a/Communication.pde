@@ -57,7 +57,7 @@ class Communication {
         int trainId = entry.getKey();
         int speed = entry.getValue();
         if (speed > 0) {
-          trainSignalBuffer.add(new TrainSignal(trainId, speed));
+          trainSignalBuffer.add(new TrainSignal(trainId));
         }
       }
       if (arduino != null) {
@@ -71,7 +71,7 @@ class Communication {
         Serial esp32 = entry.getValue();
         if (esp32 != null) {
           while (esp32.available() > 0) {
-            trainSignalBuffer.add(new TrainSignal(trainId, esp32.read()));
+            trainSignalBuffer.add(new TrainSignal(trainId));
           }
         }
       }
@@ -133,9 +133,7 @@ class Communication {
 
 class TrainSignal {
   int trainId;
-  int delta;
-  TrainSignal(int trainId, int delta) {
+  TrainSignal(int trainId) {
     this.trainId = trainId;
-    this.delta = delta;
   }
 }
