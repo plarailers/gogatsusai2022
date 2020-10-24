@@ -35,6 +35,11 @@
       <div id="controller">
         <video id="movie"></video>
         <iframe id="instruction" src="https://www.youtube.com/embed/4wzDQppkze4?enablejsapi=1" frameborder="0"></iframe>
+        <div id="mariocart">
+          <div id="circle">
+            
+          </div>
+        </div>
         <div id="mascon_area">
           <input type="range" id="mascon" value="0" min="0" max="255" step="1" title="運転するには、列車番号を入力してください">
         </div>
@@ -139,7 +144,7 @@
     }
   }
 
-  // サーバからの返答受信
+  // サーバからの返答受信時
   function onWebSocketMessage(event) {
     var response = JSON.parse(event.data);  // pw照合結果受信
     clearTimeout(sendTimer);  // タイムアウト解除
@@ -185,6 +190,8 @@
         closeWebSocket();
         stopViewer();
         break;
+      case 9:
+        break;
       default:
         message.innerText = '不明なエラーが発生しました。お手数ですがもう一度お試しください。';
         mascon.title = TITLE_NG;
@@ -192,6 +199,11 @@
         stopViewer();
         break;
     }
+  }
+
+  //【現在位置の表示】
+  function displayPosition() {
+
   }
 
   //【サイズ調整】
