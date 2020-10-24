@@ -3,42 +3,10 @@ Timetable timetable;
 Display display;
 Communication communication;
 
-
-class pidPrams {
-  // ---パラメータ---
-  // 個々の車両によって変化させる。
-  int id;  // trainId
-  double r;  // 車輪の半径 [cm]
-  int INPUT_MIN;  // 動き出すギリギリのinput
-  int INPUT_MAX;
-  int INPUT_START;  // 初動input
-  double kp;
-  double ki;
-  double kd;
-
-  pidPrams(int id, double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd) {
-    this.id = id;
-    this.r = r;
-    this.INPUT_MIN = INPUT_MIN;
-    this.INPUT_MAX = INPUT_MAX;
-    this.INPUT_START = INPUT_START;
-    this.kp = kp;
-    this.ki = ki;
-    this.kd = kd;
-  }
-  pidPrams getById(int id) {
-    for (pidPrams p : all) {
-      if (p.id == id) {
-        return p;
-      }
-    }
-    return null;
-  }
-}
+double pi = 3.14159265;
 
 void settings() {
   size(1000, 500);
-
 }
 
 void setup() {
@@ -47,7 +15,7 @@ void setup() {
   display = new Display();
   display.setup();
   communication = new Communication(this);
-  communication.simulationMode = false;
+  communication.simulationMode = true;
   communication.setup();
   while (communication.availableTrainSignal() > 0) {  // 各列車について行う
     TrainSignal trainSignal = communication.receiveTrainSignal();  // 列車id取得
@@ -56,17 +24,21 @@ void setup() {
   }
 }
 
-int time = 0;
+int startTime = millis();
+int time = startTime;
 
 void draw() {
   communication.update();
 
+  time = millis() - startTime;
+
   // 各車両について行う
   for (Train train : state.trainList) {
-    int targetSpeed = getTargetSpeed(train);
+    double targetSpeed = getTargetSpeed(train);
+    int id = train.id;
     // MoveResult moveResult = state.trainList.get(train.id).move(targetSpeed);  // 適当な距離進ませる
     // timetableUpdate(train, moveResult);  // 時刻表を更新する
-    communication.sendInput(train.id, targetSpeed);
+    communication.sendInput(train.id, (int)(targetSpeed * state.pidPramsList.get(id).kp));
     println(time + " SEND train=" + train.id + ", input=" + targetSpeed);
   }
 
@@ -86,7 +58,7 @@ void draw() {
     TrainSignal trainSignal = communication.receiveTrainSignal();
     int id = trainSignal.trainId;
     Train train = state.trainList.get(id);
-    double delta = pidPrams.getById(id).r;
+    double delta = 2*pi*state.pidPramsList.get(id).r/2;
     MoveResult moveResult = train.move(delta);
     println(time + " RECEIVE train=" + id + ", delta=" + delta);
     timetableUpdate(train, moveResult);
@@ -108,11 +80,10 @@ void draw() {
   // 描画
   display.draw(state);
   
-  try{  // 一定時間待つ
-    Thread.sleep(200);
-  } catch(InterruptedException ex){
-    ex.printStackTrace();
-  }
-  time += 200;
+  // try{  // 一定時間待つ
+  //   Thread.sleep(200);
+  // } catch(InterruptedException ex){
+  //   ex.printStackTrace();
+  // }
     
 }

@@ -8,32 +8,43 @@ class State {
   ArrayList<Train> trainList;
   ArrayList<Station> stationList;
   ArrayList<Sensor> sensorList;
+  ArrayList<pidPrams> pidPramsList;
   //  ------この部分が線路形状と車両の配置を定義する----------
   State() {
+    // Junction(id, servoId)
     junctionList = new ArrayList<Junction>();
     junctionList.add(new Junction(0, -1));
     junctionList.add(new Junction(1, 1));
     junctionList.add(new Junction(2, 0));
     junctionList.add(new Junction(3, -1));
+    // Section(id, length, sourceId, targetId, sourceServoState)
     sectionList = new ArrayList<Section>();
-    sectionList.add(new Section(0, (int)(STRAIGHT_UNIT * 5.5), 3, 0));
-    sectionList.add(new Section(1, (int)(STRAIGHT_UNIT * 5 + CURVE_UNIT * 4), 0, 1));
-    sectionList.add(new Section(2, (int)(STRAIGHT_UNIT * 5.5), 1, 2));
-    sectionList.add(new Section(3, (int)(STRAIGHT_UNIT * 5.5), 1, 2));
-    sectionList.add(new Section(4, (int)(STRAIGHT_UNIT * 3 + CURVE_UNIT * 4), 2, 3));
+    sectionList.add(new Section(0, (int)(STRAIGHT_UNIT * 5.5), 3, 0, ServoState.NoServo));
+    sectionList.add(new Section(1, (int)(STRAIGHT_UNIT * 5 + CURVE_UNIT * 4), 0, 1, ServoState.NoServo));
+    sectionList.add(new Section(2, (int)(STRAIGHT_UNIT * 5.5), 1, 2, ServoState.Straight));
+    sectionList.add(new Section(3, (int)(STRAIGHT_UNIT * 5.5), 1, 2, ServoState.Curve));
+    sectionList.add(new Section(4, (int)(STRAIGHT_UNIT * 3 + CURVE_UNIT * 4), 2, 3, ServoState.NoServo));
     // 場合によっては、着発番線に合わせてここにtoggleを挟む必要がある
+    // Sensor(id, sectionId, position)
     sensorList = new ArrayList<Sensor>();
     sensorList.add(new Sensor(0, 1, (int)(STRAIGHT_UNIT * 2.5 + CURVE_UNIT * 2)));
     sensorList.add(new Sensor(1, 4, (int)(STRAIGHT_UNIT * 1.5 + CURVE_UNIT * 2)));
+    // Station(id, name)
     stationList = new ArrayList<Station>();
     stationList.add(new Station(0, "A"));  // A駅を追加
     stationList.add(new Station(1, "B"));  // B駅を追加
+    // station.setTrack(trackId, sectionId, stationPosition)
     Station.getById(0).setTrack(1, 0, (int)(STRAIGHT_UNIT * 3));  // 駅0の1番線はSection0
     Station.getById(1).setTrack(1, 2, (int)(STRAIGHT_UNIT * 3));  // 駅1の1番線はsection2
     Station.getById(1).setTrack(2, 3, (int)(STRAIGHT_UNIT * 3));  // 駅1の2番線はsection3
+    // Train(initialSection, initialPosition)
     trainList = new ArrayList<Train>();
     trainList.add(new Train(Station.getById(0).trackList.get(1), (int)(STRAIGHT_UNIT * 3)));  // 駅0の1番線に配置
     trainList.add(new Train(Station.getById(1).trackList.get(1), (int)(STRAIGHT_UNIT * 3)));  // 駅1の1番線に配置
+    // pidPrams(int id, double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd)
+    pidPramsList = new ArrayList<pidPrams>();
+    pidPramsList.add(new pidPrams(0, 1.4, 20, 128, 30, 0.9, 0, 0));  // Dr.
+    pidPramsList.add(new pidPrams(1, 1.4, 100, 255, 150, 1.5, 0, 0));  // E6
     // --------------------------------------------
   }
 }
@@ -46,8 +57,8 @@ enum MoveResult {
 
 class Train {
   int id;
-  int mileage = 0;
-  int targetSpeed = 0;
+  double mileage = 0;
+  double targetSpeed = 0;
   Section currentSection;
   
   Train(Section initialSection, int initialPosition) {
@@ -63,8 +74,8 @@ class Train {
   
   // 引数：進んだ距離
   // 返り値：新しい区間に移ったかどうか
-  MoveResult move(int delta) {
-    int prevMileage = mileage;
+  MoveResult move(double delta) {
+    double prevMileage = mileage;
     mileage += delta;
     if (mileage >= currentSection.length) {  // 分岐点を通過したとき
       mileage -= currentSection.length;
@@ -81,6 +92,36 @@ class Train {
   }
 }
 
+class pidPrams {
+  // ---パラメータ---
+  // 個々の車両によって変化させる。
+  int id;  // trainId
+  double r;  // 車輪の半径 [cm]
+  int INPUT_MIN;  // 動き出すギリギリのinput
+  int INPUT_MAX;
+  int INPUT_START;  // 初動input
+  double kp;
+  double ki;
+  double kd;
+
+  pidPrams(int id, double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd) {
+    this.id = id;
+    this.r = r;
+    this.INPUT_MIN = INPUT_MIN;
+    this.INPUT_MAX = INPUT_MAX;
+    this.INPUT_START = INPUT_START;
+    this.kp = kp;
+    this.ki = ki;
+    this.kd = kd;
+  }
+}
+
+enum ServoState {
+  NoServo,
+  Straight,
+  Curve
+}
+
 static class Junction {
   static ArrayList<Junction> all = new ArrayList<Junction>();
   
@@ -88,6 +129,7 @@ static class Junction {
   int servoId;
   ArrayList<Section> inSectionList;
   ArrayList<Section> outSectionList;
+  ArrayList<ServoState> outServoStateList;
   int inSectionIndex;
   int outSectionIndex;
   
@@ -97,15 +139,27 @@ static class Junction {
     this.servoId = servoId;
     inSectionList = new ArrayList<Section>();
     outSectionList = new ArrayList<Section>();
+    outServoStateList = new ArrayList<ServoState>();
     inSectionIndex = 0;
     outSectionIndex = 0;
   }
   
-  void toggle() {
+  void addInSection(Section section) {
+    inSectionList.add(section);
+  }
+  
+  void addOutSection(Section section, ServoState servoState) {
+    outSectionList.add(section);
+    outServoStateList.add(servoState);
+  }
+  
+  ServoState toggle() {
     if (inSectionList.size() > 1) {
       inSectionIndex = (inSectionIndex + 1) % inSectionList.size();
+      return ServoState.NoServo;
     } else {
       outSectionIndex = (outSectionIndex + 1) % outSectionList.size();
+      return outServoStateList.get(outSectionIndex);
     }
   }
   
@@ -137,14 +191,14 @@ static class Section {
   boolean hasStation = false;
   int stationPosition = 0;
   
-  Section(int id, int length, int sourceId, int targetId) {
+  Section(int id, int length, int sourceId, int targetId, ServoState sourceServoState) {
     all.add(this);
     this.id = id;
     this.length = length;
     this.sourceJunction = Junction.getById(sourceId);
-    this.sourceJunction.outSectionList.add(this);
+    this.sourceJunction.addOutSection(this, sourceServoState);
     this.targetJunction = Junction.getById(targetId);
-    this.targetJunction.inSectionList.add(this);
+    this.targetJunction.addInSection(this);
   }
   
   public void putStation(int stationPosition) {

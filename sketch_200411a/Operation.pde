@@ -3,7 +3,7 @@
 static final int STOPMERGIN = 10;  // Junctionや先行列車の何cm手前で停止するか
 static final int TRAINLENGTH = 43;  // 列車1編成の長さ
 static final int MINSTOPTIME = 5;  // 最低停車時間
-static final int MAXSPEED = 20;  // 車両の最高速度 (cm/s)
+static final int MAXSPEED = 40;  // 車両の最高速度 (cm/s)
 static final int LOOPTIME = 5;  // ダイヤを一周全部実施したら、何秒待って時刻をリセットする？
 boolean finishFlag[] = {false};  // 車両の台数ぶんfalseを代入
 // --------------------------------------------------------------
@@ -51,7 +51,7 @@ void timetableUpdate(Train train, MoveResult moveResult) {
 
     int i = 0;
     while (finishFlag[i]) {
-      i++;
+      i++;  // finishFlagが立っている列車の個数を数えている
       if (i == finishFlag.length) {  // すべての列車の運転が終了したら、初期状態へリセット
         println(time + "[Log] ダイヤをすべて実施しました。指定時間経過後に初期状態へリセットします");
         resetAll();
@@ -63,14 +63,14 @@ void timetableUpdate(Train train, MoveResult moveResult) {
 }
 
 // 【列車制御】指定された列車の速度を返す
-int getTargetSpeed(Train me) {
+double getTargetSpeed(Train me) {
   StopPoint stopPoint = getStopPoint(me);  // 停止点取得
-  int distance = getDistance(me.currentSection, me.mileage, stopPoint.section, stopPoint.mileage);  // 停止点までの距離を取得
-  int targetSpeed = 0;
+  double distance = getDistance(me.currentSection, me.mileage, stopPoint.section, stopPoint.mileage);  // 停止点までの距離を取得
+  double targetSpeed = 0;
   if (distance > 50) {  // 停止点までの距離に応じて速度を適当に調整
     targetSpeed = MAXSPEED;
   } else if (distance > 0) {
-    targetSpeed = (int)((float)distance/50 * MAXSPEED * 0.9 + (float)MAXSPEED * 0.1);
+    targetSpeed = distance/50 * MAXSPEED * 0.9 + MAXSPEED * 0.1;
   }
 
   // 出発処理
@@ -87,8 +87,8 @@ int getTargetSpeed(Train me) {
 }
 
 // 線路上のある点からある点までの距離を返す
-int getDistance(Section s1, int mileage1, Section s2, int mileage2) {
-  int distance = 0;
+double getDistance(Section s1, double mileage1, Section s2, double mileage2) {
+  double distance = 0;
   Section testSection = s1;
   
   while (testSection.id != s2.id) {
@@ -109,7 +109,7 @@ StopPoint getStopPoint(Train me) {
       if (timetable.getByTrainId(me.id).time == info.time) {
         if (info.isDeparture() && isSignalGo(testSection) && info.time < time/1000) {  // 到着済で、分岐器開通し前方在線なし、出発時刻を過ぎている
           testSection = testSection.targetJunction.getPointedSection();  // 次のsectionへ進む
-        } else {  // 最低停車時間を経過していない場合は強制的に止める
+        } else {  // 出発できない場合は止める
           return new StopPoint(testSection, testSection.stationPosition);
         }
       } else {

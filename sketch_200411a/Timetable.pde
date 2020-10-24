@@ -2,7 +2,7 @@ class Timetable {
   ArrayList<Info> infoList;
   Timetable() {
     // csv時刻表データ読込
-    Table timeTable = loadTable("Table2sta1train5sec.csv", "header");
+    Table timeTable = loadTable("Table2sta2train5sec.csv", "header");
     infoList = new ArrayList<Info>();
     InfoType type = InfoType.Arrival;
     int time = 0;
