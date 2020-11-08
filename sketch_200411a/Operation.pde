@@ -67,10 +67,11 @@ double getTargetSpeed(Train me) {
   StopPoint stopPoint = getStopPoint(me);  // 停止点取得
   double distance = getDistance(me.currentSection, me.mileage, stopPoint.section, stopPoint.mileage);  // 停止点までの距離を取得
   double targetSpeed = 0;
-  if (distance > 50) {  // 停止点までの距離に応じて速度を適当に調整
+  //if (distance > 50) {  // 停止点までの距離に応じて速度を適当に調整
+  if (distance > 0) {
     targetSpeed = MAXSPEED;
-  } else if (distance > 0) {
-    targetSpeed = distance/50 * MAXSPEED * 0.9 + MAXSPEED * 0.1;
+  //} else if (distance > 0) {
+  //  targetSpeed = distance/50 * MAXSPEED * 0.9 + MAXSPEED * 0.1;
   }
 
   // 出発処理

@@ -15,7 +15,7 @@ void setup() {
   display = new Display();
   display.setup();
   communication = new Communication(this);
-  communication.simulationMode = true;
+  communication.simulationMode = false;
   communication.setup();
   while (communication.availableTrainSignal() > 0) {  // 各列車について行う
     TrainSignal trainSignal = communication.receiveTrainSignal();  // 列車id取得

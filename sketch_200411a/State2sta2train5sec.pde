@@ -43,8 +43,8 @@ class State {
     trainList.add(new Train(1, Station.getById(1).trackList.get(1), (int)(STRAIGHT_UNIT * 3)));  // 駅1の1番線に配置
     // pidPrams(int id, double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd)
     pidPramsList = new ArrayList<pidPrams>();
-    pidPramsList.add(new pidPrams(0, 1.4, 20, 128, 30, 0.9, 0, 0));  // Dr.
-    pidPramsList.add(new pidPrams(1, 1.4, 100, 255, 150, 1.5, 0, 0));  // E6
+    pidPramsList.add(new pidPrams(0, 1.4, 30, 128, 40, 1.2, 0, 0));  // Dr.
+    pidPramsList.add(new pidPrams(1, 1.4, 150, 255, 190, 5.0, 0, 0));  // E6
     // --------------------------------------------
   }
 }
