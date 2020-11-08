@@ -3,7 +3,7 @@
 - ESP32に列車IDを割り当てるのは、Communication.pdeのvoid setup()内で行う。
 - サーボやCdSにIDを割り当てるのは、State.pdeの冒頭付近でまとめて行う。
 ## 中身
-- com_to_arduino.ino (谷口)
+- child_ship.ino (谷口)
   - Arduinoによるサーボとセンサの制御プログラム
   - junctionId を受け取り、ポイントを切り替える。
   - CdSが車両の通過を検知したとき、通過したCdSの sensorId を送る。
