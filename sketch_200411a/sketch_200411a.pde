@@ -36,8 +36,6 @@ void draw() {
   for (Train train : state.trainList) {
     double targetSpeed = getTargetSpeed(train);
     int id = train.id;
-    // MoveResult moveResult = state.trainList.get(train.id).move(targetSpeed);  // 適当な距離進ませる
-    // timetableUpdate(train, moveResult);  // 時刻表を更新する
     int input = (int)(targetSpeed * state.pidPramsList.get(id).kp);
     communication.sendInput(train.id, input);
     println(time + " SEND train=" + train.id + ", input=" + input);

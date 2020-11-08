@@ -73,6 +73,7 @@ class Communication {
         if (esp32 != null) {
           while (esp32.available() > 0) {
             trainSignalBuffer.add(new TrainSignal(trainId));
+            esp32.read();
           }
         }
       }
