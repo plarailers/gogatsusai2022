@@ -3,17 +3,21 @@
 #include<VarSpeedServo.h>
 
 //サーボ関係の定数、変数
-const int num_servo = 2;//サーボの数(ポイントの数)
+// const int num_servo = 2;//サーボの数(ポイントの数)
+const int num_servo = 1;
 
 VarSpeedServo servo[num_servo]; //各サーボを入れる配列
 
 const int servoSpeed = 100; //1から255。サーボを回転させる速さ。これを大きくすると、サーボ稼働時にセンサ入力が送られてしまう
 
-const int servo_angle_straight[num_servo] = {0, 90}; //サーボを直進にする際の角度。適宜いじってください
-const int servo_angle_curve[num_servo] = {130, 145}; //サーボを曲げる際の角度。適宜いじってください
+// const int servo_angle_straight[num_servo] = {0, 90}; //サーボを直進にする際の角度。適宜いじってください
+// const int servo_angle_curve[num_servo] = {130, 145}; //サーボを曲げる際の角度。適宜いじってください
+const int servo_angle_straight[num_servo] = {17};
+const int servo_angle_curve[num_servo] = {99};
 const byte straight = 0;
 const byte curve = 1;
-byte servo_status[num_servo] = {straight, straight}; //各サーボの状態を格納。初期値は適宜いじってください。
+// byte servo_status[num_servo] = {straight, straight}; //各サーボの状態を格納。初期値は適宜いじってください。
+byte servo_status[num_servo] = {straight};
 
 byte data = 0;//受信データ格納用
 
@@ -31,7 +35,7 @@ void servo_change(byte servo_id, byte servo_state) { //servoの向きを切り�
 //CdS関係の変数、定数
 const int num_sensor = 1; //CdSの個数
 const int sensorPin[num_sensor] = {A0}; //CdSセンサーの計測
-int sensor_baseline[num_sensor] = {200}; //CdSセンサーの読み取り値がこれを下回ったら通過と判定する。起動時に決定する仕様に変更する必要あり。
+int sensor_baseline[num_sensor] = {150}; //CdSセンサーの読み取り値がこれを下回ったら通過と判定する。起動時に決定する仕様に変更する必要あり。
 unsigned long before_passing_time[num_sensor] = {0}; //前回通過した時の時間
 unsigned long time; //現在の時間。millis()を受ける。
 unsigned long time_for_passing = 3000; //通過に要する時間。前回の通過判定からこの時間だけは通過判定がなされない。
@@ -79,8 +83,9 @@ void CdS_process(int sensor_id){
 
 void setup(){
   Serial.begin(9600);
-  servo[0].attach(13); //()の中適当にいじるべきかもしれない。
-  servo[1].attach(3); //()の中適当にいじるべきかもしれない。
+  //servo[0].attach(13); //()の中適当にいじるべきかもしれない。
+  //servo[1].attach(3); //()の中適当にいじるべきかもしれない。
+  servo[0].attach(3);
   for (int servo_id = 0; servo_id < num_servo; servo_id++) {
     servo[servo_id].write(servo_angle_straight[servo_id], servoSpeed, true);
     servo_status[servo_id] = straight;

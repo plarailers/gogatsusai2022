@@ -38,8 +38,9 @@ void draw() {
     int id = train.id;
     // MoveResult moveResult = state.trainList.get(train.id).move(targetSpeed);  // 適当な距離進ませる
     // timetableUpdate(train, moveResult);  // 時刻表を更新する
-    communication.sendInput(train.id, (int)(targetSpeed * state.pidPramsList.get(id).kp));
-    println(time + " SEND train=" + train.id + ", input=" + targetSpeed);
+    int input = (int)(targetSpeed * state.pidPramsList.get(id).kp);
+    communication.sendInput(train.id, input);
+    println(time + " SEND train=" + train.id + ", input=" + input);
   }
 
   // 各ポイントについて行う
@@ -80,10 +81,10 @@ void draw() {
   // 描画
   display.draw(state);
   
-  // try{  // 一定時間待つ
-  //   Thread.sleep(200);
-  // } catch(InterruptedException ex){
-  //   ex.printStackTrace();
-  // }
+  try{  // 一定時間待つ
+    Thread.sleep(200);
+  } catch(InterruptedException ex){
+    ex.printStackTrace();
+  }
     
 }

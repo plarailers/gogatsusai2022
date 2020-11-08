@@ -14,8 +14,8 @@ class State {
     // Junction(id, servoId)
     junctionList = new ArrayList<Junction>();
     junctionList.add(new Junction(0, -1));
-    junctionList.add(new Junction(1, 1));
-    junctionList.add(new Junction(2, 0));
+    junctionList.add(new Junction(1, 0));
+    junctionList.add(new Junction(2, -1));
     junctionList.add(new Junction(3, -1));
     // Section(id, length, sourceId, targetId, sourceServoState)
     sectionList = new ArrayList<Section>();
@@ -28,7 +28,7 @@ class State {
     // Sensor(id, sectionId, position)
     sensorList = new ArrayList<Sensor>();
     sensorList.add(new Sensor(0, 1, (int)(STRAIGHT_UNIT * 2.5 + CURVE_UNIT * 2)));
-    sensorList.add(new Sensor(1, 4, (int)(STRAIGHT_UNIT * 1.5 + CURVE_UNIT * 2)));
+    sensorList.add(new Sensor(1, 4, (int)(STRAIGHT_UNIT * 2.5 + CURVE_UNIT * 2)));
     // Station(id, name)
     stationList = new ArrayList<Station>();
     stationList.add(new Station(0, "A"));  // A駅を追加
@@ -39,8 +39,8 @@ class State {
     Station.getById(1).setTrack(2, 3, (int)(STRAIGHT_UNIT * 3));  // 駅1の2番線はsection3
     // Train(initialSection, initialPosition)
     trainList = new ArrayList<Train>();
-    trainList.add(new Train(Station.getById(0).trackList.get(1), (int)(STRAIGHT_UNIT * 3)));  // 駅0の1番線に配置
-    trainList.add(new Train(Station.getById(1).trackList.get(1), (int)(STRAIGHT_UNIT * 3)));  // 駅1の1番線に配置
+    trainList.add(new Train(0, Station.getById(0).trackList.get(1), (int)(STRAIGHT_UNIT * 3)));  // 駅0の1番線に配置
+    trainList.add(new Train(1, Station.getById(1).trackList.get(1), (int)(STRAIGHT_UNIT * 3)));  // 駅1の1番線に配置
     // pidPrams(int id, double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd)
     pidPramsList = new ArrayList<pidPrams>();
     pidPramsList.add(new pidPrams(0, 1.4, 20, 128, 30, 0.9, 0, 0));  // Dr.
@@ -55,15 +55,19 @@ enum MoveResult {
   PassedStation
 }
 
-class Train {
+static class Train {
+  static ArrayList<Train> all = new ArrayList<Train>();
+  
   int id;
   double mileage = 0;
   double targetSpeed = 0;
   Section currentSection;
   
-  Train(Section initialSection, int initialPosition) {
-    currentSection = initialSection;
-    mileage = initialPosition;
+  Train(int id, Section initialSection, int initialPosition) {
+    all.add(this);
+    this.id = id;
+    this.currentSection = initialSection;
+    this.mileage = initialPosition;
   }
   
   // 返り値：現在の区間の何割のところにいるか [0, 1)

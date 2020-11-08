@@ -36,7 +36,7 @@ class Communication {
       if (isWindows) {
         simulationSpeedMap.put(0, 0);
         simulationSpeedMap.put(1, 0);
-        arduino = new Serial(parent, "COM8", 9600);
+        arduino = new Serial(parent, "COM7", 9600);
       }
     } else {
       if (isMac) {
@@ -112,7 +112,7 @@ class Communication {
   }
   
   // 指定したポイントに切替命令を送る。
-  void sendToggle(int junctionId, ServoState servoState) {
+  void sendToggle(int servoId, ServoState servoState) {
     if (arduino != null) {
       int servoStateCode = 0;
       switch (servoState) {
@@ -125,7 +125,7 @@ class Communication {
           servoStateCode = 1;
           break;
       }
-      arduino.write(junctionId);
+      arduino.write(servoId);
       arduino.write(servoStateCode);
     }
   }
