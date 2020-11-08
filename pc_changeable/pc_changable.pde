@@ -35,10 +35,30 @@ void setup() {
 }
 
 void draw() {
-  while (myPort.available() > 0) {
+  if (myPort.available() == 1) {
     int data = myPort.read();
-    println(getTime(), "[Bluetooth:read]", data);
+    println(millis(), "[Bluetooth:read]", data);
+    
+  } else if (myPort.available() > 1) {
+    try{  // on error, wait long time
+      Thread.sleep(500);
+    } catch(InterruptedException ex){
+      ex.printStackTrace();
+    }
+    int data = myPort.read();
+    println(millis(), "[Bluetooth:read]", data);
+    while (myPort.available() >0) {
+      myPort.read();
+    }
   }
+    
+  //while (myPort.available() > 0) {
+  //  int data = myPort.read();
+  //  println(millis(), "[Bluetooth:read]", data);
+  //  while (myPort.available() >0) {
+  //    myPort.read();
+  //  }
+  //}
 }
 
 void webSocketEvent(String msg) {
@@ -46,7 +66,7 @@ void webSocketEvent(String msg) {
   JSONObject json_msg = parseJSONObject(msg);
   if (!json_msg.isNull("speed")) {
     int tmp_speed = json_msg.getInt("speed");
-    println(getTime(), "[Bluetooth:write]", tmp_speed);
+    println(millis(), "[Bluetooth:write]", tmp_speed);
     myPort.write(tmp_speed);
   }
 }
