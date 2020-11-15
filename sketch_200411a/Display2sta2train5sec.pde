@@ -47,7 +47,8 @@ class Display {
         // センサの描画
         fill(240);
         strokeWeight(0);
-        rect(400-8, 200-8, 16, 16);
+        rect(424-6, 200-6, 12, 12);
+        rect(824-6, 200-6, 12, 12);
         // 文字類の描画
         textSize(20);
         textAlign(CENTER);

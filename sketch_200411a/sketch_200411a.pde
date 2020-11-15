@@ -24,21 +24,23 @@ void setup() {
   }
 }
 
-int startTime = millis();
-int time = startTime;
+int time = 0;
 
 void draw() {
   communication.update();
-
-  time = millis() - startTime;
 
   // 各車両について行う
   for (Train train : state.trainList) {
     double targetSpeed = getTargetSpeed(train);
     int id = train.id;
-    int input = (int)(targetSpeed * state.pidPramsList.get(id).kp);
+    int INPUT_MIN = state.pidPramsList.get(id).INPUT_MIN;
+    double kp = state.pidPramsList.get(id).kp;
+    int input = 0;
+    if (targetSpeed > 0) {
+      input = (int)(INPUT_MIN + targetSpeed * kp);
+    }
     communication.sendInput(train.id, input);
-    println(time + " SEND train=" + train.id + ", input=" + input);
+    println(time + " SEND train=" + train.id + ", input=" + input +" (taregetSpeed=" + targetSpeed + ")");
   }
 
   // 各ポイントについて行う
@@ -64,12 +66,6 @@ void draw() {
   }
   
   // センサ入力で車両の位置補正を行う
-  // センサ入力があったときに関数 positionAdjust(sensorId) を呼んでください
-  if (keyPressed == true) {  // (デバッグ用)キーを押したらセンサ0の位置補正
-    println("keyPressed");
-    positionAdjust(0);
-  }
-  
   while (communication.availableSensorSignal() > 0) {
     int sensorId = communication.receiveSensorSignal();
     println(time + " RECEIVE sensor=" + sensorId);
@@ -80,9 +76,10 @@ void draw() {
   display.draw(state);
   
   try{  // 一定時間待つ
-    Thread.sleep(200);
+    Thread.sleep(50);
   } catch(InterruptedException ex){
     ex.printStackTrace();
   }
+  time += 50;
     
 }
