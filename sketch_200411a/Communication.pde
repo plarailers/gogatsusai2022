@@ -71,9 +71,10 @@ class Communication {
         int trainId = entry.getKey();
         Serial esp32 = entry.getValue();
         if (esp32 != null) {
-          while (esp32.available() > 0) {
+          // 同時刻に複数の信号が来る不具合のため、１回のループですべて消費する。
+          if (esp32.available() > 0) {
             trainSignalBuffer.add(new TrainSignal(trainId));
-            esp32.read();
+            while (esp32.available() > 0) esp32.read();
           }
         }
       }
