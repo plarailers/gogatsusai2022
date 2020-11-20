@@ -44,7 +44,7 @@ class Communication {
         arduino = new Serial(parent, "/dev/tty.usbmodem14301", 9600);
       }
       if (isWindows) {
-        esp32Map.put(0, new Serial(parent, "COM11", 115200));  // Dr.
+        esp32Map.put(0, new Serial(parent, "COM12", 115200));  // Dr.
         esp32Map.put(1, new Serial(parent, "COM8", 115200));  // E6
         arduino = new Serial(parent, "COM7", 9600);
       }

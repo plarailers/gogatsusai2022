@@ -1,6 +1,6 @@
 // --------------------------------------------------------------
 // 列車制御に使う定数【ここは適切に書き換える】
-static final int STOPMERGIN = 40;  // Junctionや先行列車の何cm手前で停止するか
+static final int STOPMERGIN = 30;  // Junctionや先行列車の何cm手前で停止するか
 static final int TRAINLENGTH = 43;  // 列車1編成の長さ
 static final int MINSTOPTIME = 5;  // 最低停車時間
 static final int MAXSPEED = 40;  // 車両の最高速度 (cm/s)

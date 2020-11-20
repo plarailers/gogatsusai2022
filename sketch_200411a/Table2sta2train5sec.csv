@@ -3,10 +3,10 @@ trainId,stationId,type,time,trackId
 0,1,Arrival,08,2
 0,1,Departure,28,2
 0,0,Arrival,36,1
-1,1,Departure,00,2
+1,1,Departure,00,1
 1,0,Arrival,08,1
 1,0,Departure,12,1
 1,1,Passage,18,1
 1,0,Arrival,24,1
 1,0,Departure,28,1
-1,1,Arrival,36,2
+1,1,Arrival,36,1

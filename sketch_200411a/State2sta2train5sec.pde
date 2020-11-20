@@ -33,17 +33,17 @@ class State {
     stationList.add(new Station(0, "A"));  // A駅を追加
     stationList.add(new Station(1, "B"));  // B駅を追加
     // station.setTrack(trackId, sectionId, stationPosition)
-    Station.getById(0).setTrack(1, 0, (int)(STRAIGHT_UNIT * 3.5));  // 駅0の1番線はSection0
-    Station.getById(1).setTrack(1, 2, (int)(STRAIGHT_UNIT * 4));  // 駅1の1番線はsection2
-    Station.getById(1).setTrack(2, 3, (int)(STRAIGHT_UNIT * 4));  // 駅1の2番線はsection3
+    Station.getById(0).setTrack(1, 0, (int)(STRAIGHT_UNIT * 3.0));  // 駅0の1番線はSection0
+    Station.getById(1).setTrack(1, 2, (int)(STRAIGHT_UNIT * 3.0));  // 駅1の1番線はsection2
+    Station.getById(1).setTrack(2, 3, (int)(STRAIGHT_UNIT * 3.0));  // 駅1の2番線はsection3
     // Train(initialSection, initialPosition)
     trainList = new ArrayList<Train>();
-    trainList.add(new Train(0, Station.getById(0).trackList.get(1), (int)(STRAIGHT_UNIT * 3.5)));  // 駅0の1番線に配置
-    trainList.add(new Train(1, Station.getById(1).trackList.get(2), (int)(STRAIGHT_UNIT * 4)));  // 駅1の2番線に配置
+    trainList.add(new Train(0, Station.getById(0).trackList.get(1), (int)(STRAIGHT_UNIT * 3.0)));  // 駅0の1番線に配置
+    trainList.add(new Train(1, Station.getById(1).trackList.get(1), (int)(STRAIGHT_UNIT * 3.0)));  // 駅1の1番線に配置
     // pidPrams(int id, double r, int INPUT_MIN, int INPUT_MAX, int INPUT_START, double kp, double ki, double kd)
     pidPramsList = new ArrayList<pidPrams>();
-    pidPramsList.add(new pidPrams(0, 1.12, 38, 128, 40, 0.3, 0, 0));  // Dr. (maxinput: 38 + 0.3*40cm/s = 50)
-    pidPramsList.add(new pidPrams(1, 1.12, 195, 255, 190, 0.8, 0, 0));  // E6 (maxinput: 190 + 0.8*40cm/s= 222)
+    pidPramsList.add(new pidPrams(0, 1.12, 34, 128, 40, 0.35, 0, 0));  // Dr. (maxinput: 34 + 0.35*40cm/s = 46)
+    pidPramsList.add(new pidPrams(1, 1.12, 185, 255, 200, 0.8, 0, 0));  // E6 (maxinput: 185 + 0.8*40cm/s= 217)
     // --------------------------------------------
   }
 }
