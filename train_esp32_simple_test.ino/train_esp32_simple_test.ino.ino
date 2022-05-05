@@ -1,9 +1,8 @@
-//arduinoを使った有線テスト用。abcdで操作。
-//arduinoと基板の5V, GND, 信号線2つ合計4本ジャンパー線で繋いで使用。
+//esp32を使った有線テスト用。abcdで操作。
 
 /*------------------------------------------*/
-const int INPUT_PIN = 5; // モーターのピン
-const int SENSOR_PIN = A1;  // ホールセンサーのピン
+const int INPUT_PIN = A18; // モーターのピン
+const int SENSOR_PIN = 4;  // ホールセンサーのピン
 int INPUT_MAX = 255;  // inputの上限
 int INPUT_MIN = 0;    // inputの下限
 int input = 0;  // モータへの入力(0～255)
@@ -14,8 +13,10 @@ int prev_sensor_value = LOW;
 
 void setup() {
   Serial.begin(115200);
-  pinMode(A1, INPUT);
-  pinMode(5, OUTPUT);
+  pinMode(4, INPUT);
+  //ledcSetup(0, 12800, 8);
+  ledcSetup(0, 700, 8);
+  ledcAttachPin(INPUT_PIN, 0);
 }
 
 void loop(){
@@ -41,11 +42,11 @@ void loop(){
   analogWrite(INPUT_PIN, input);
   Serial.print("input:");
   Serial.print(input);
-  Serial.print(" ");
+  Serial.println(" ");
 
 //ホールセンサの接触不良を確認する。
   sensor_value = digitalRead(SENSOR_PIN);
-  Serial.print("sensor_value:");
-  Serial.print(sensor_value);
-  Serial.println(" ");
+//  Serial.print("sensor_value:");
+//  Serial.print(sensor_value);
+//  Serial.println(" ");
 }
