@@ -33,19 +33,27 @@ class PointSwitcher:
                     self.__pointInterlock.requestToggle(junction.id)
 
     # 指定したjunctionに一番先に到着する列車を取得する
-    def __getNearestTrain(self, junction: Junction) -> Train:
+    def __getNearestTrain(self, junction: Junction, originalJunction: Junction = None) -> Train:
 
         # まず、指定したjunctionから線路を辿り、junctionに先に到着する可能性のある列車をすべて取得する
         # 駅の出口など、inSectionが複数あるjunctionを指定した場合、trainsは2つ以上の候補がある
         trains: list[Train] = []
         testJunction = junction
+
+        # 何も見つけられずに最初の地点に戻ってきてしまった場合、終了
+        if originalJunction != None and junction.id == originalJunction.id:
+            return trains
+
+        if originalJunction == None:
+            originalJunction = junction
+
         while True:
             train = self.__state.getTrainInSection(testJunction.inSectionStraight)
             if train:
                 trains.append(train)
             else:
                 testJunction = testJunction.inSectionStraight.sourceJunction
-                trains.append(self.__getNearestTrain(testJunction))
+                trains.append(self.__getNearestTrain(testJunction, originalJunction))
 
             # inSectionがひとつだけの分岐であれば、ここで終了
             if testJunction.inSectionCurve == None:
@@ -57,7 +65,7 @@ class PointSwitcher:
                     trains.append(train)
                 else:
                     testJunction = testJunction.inSectionCurve.sourceJunction
-                    trains.append(self.__getNearestTrain(testJunction))
+                    trains.append(self.__getNearestTrain(testJunction, originalJunction))
                 break
 
         trains = list(set(trains))  # 重複を削除
