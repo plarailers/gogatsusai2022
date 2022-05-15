@@ -1,6 +1,7 @@
 import { RemoteControl } from "./remote.js";
 
-const raspi = new RemoteControl();
+const raspi = new RemoteControl();  // ラズパイとのWebRTC通信
+var socket = io();  // central_controllerとのwebsockt通信
 
 var speed = 0;
 const TITLE_NG = "運転するには、列車番号を入力してください";
@@ -39,6 +40,9 @@ pw_send.onclick = function () {
 raspi.subscribe((data) => {
   const text = new TextDecoder().decode(data);
   console.log(text);
+  if (text === 'o') {
+    socket.emit('hall', {trainId: 1});
+  }
 });
 
 //【サイズ調整】
@@ -80,9 +84,6 @@ function stopInstruction() {
 
 
 // websocket経由で信号を受け取って、信号の表示を切り替える。
-/* ------サーバーとの通信関係------- */
-var socket = io();
-
 // サーバからデータを受信
 socket.on('signal_taiken', function (data) {
   if (data['signal'] === 'R') {

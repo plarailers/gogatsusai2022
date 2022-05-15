@@ -61,9 +61,9 @@ def setup():
 
 def on_sensor(channel):
     data = b'o\n'
-    # port.write(data)
-    # port.flush()
-    send_queue.put_nowait(data)
+    port.write(data)
+    port.flush()
+    # send_queue.put_nowait(data)
     print(datetime.datetime.now(), 'send sensor', data)
 
 # WebSocketサーバーを立ててデータを送受信するための定型処理

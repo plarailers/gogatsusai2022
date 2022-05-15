@@ -41,6 +41,12 @@ def index():
     # ブラウザにwebページのデータを返す
     return render_template('index.html')
 
+@socketio.on('hall')  # ホールセンサ信号受信時
+def handle_hall(data):
+    trainId = data['trainId']
+    operation.state.communication.deltaMap[trainId] += 2 * pi * operation.state.communication.pidParamMap[trainId].r / 2
+    print(f"[main.py] receive o from train {data['trainId']}")
+
 if __name__ == "__main__":
     thread1 = threading.Thread(target=operation_loop, daemon=True)
     thread1.start()  # 自動運転のオペレーションを開始
