@@ -7,11 +7,12 @@ import os.path
 import datetime
 import RPi.GPIO as GPIO
 import serial
-import asyncio
-import websockets
+import socketio
+import threading
 
 MOTOR_PIN = 19
 SENSOR_PIN = 10
+WS_SERVER_URL = '192.168.137.1:50050'
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(MOTOR_PIN, GPIO.OUT)
@@ -27,10 +28,9 @@ process_socat = None
 process_momo = None
 port = None
 
-# WebSocketで非同期に送受信したデータを溜めているキュー
-# 中身はbytes
-send_queue: asyncio.Queue[bytes] = asyncio.Queue()
-recv_queue: asyncio.Queue[bytes] = asyncio.Queue()
+sio = socketio.Client()
+
+@sio.on()
 
 def setup():
     global process_socat, process_momo, port, handle_speed, controlled_speed
@@ -49,6 +49,7 @@ def setup():
         'test',
     ])
     port = serial.Serial(port2_name, 9600)
+    sio.connect(WS_SERVER_URL)
     motor.start(0)
     handle_speed = 0
     controlled_speed = 0
@@ -63,37 +64,8 @@ def on_sensor(channel):
     data = b'o\n'
     # port.write(data)
     # port.flush()
-    send_queue.put_nowait(data)
+    sio.emit('o')
     print(datetime.datetime.now(), 'send sensor', data)
-
-# WebSocketサーバーを立ててデータを送受信するための定型処理
-# 参考: https://websockets.readthedocs.io/en/stable/howto/patterns.html
-async def websocket_serve():
-    # WebSocketで受信したデータをrecv_queueに入れる
-    async def consumer_handler(websocket):
-        async for message in websocket:
-            await recv_queue.put(message)
-
-    # send_queueにあるデータをWebSocketで送信する
-    async def producer_handler(websocket):
-        while True:
-            message = await send_queue.get()
-            await websocket.send(message)
-
-    # 受信と送信のどちらかが落ちたときにもう片方も落とす
-    async def handler(websocket):
-        consumer_task = asyncio.create_task(consumer_handler(websocket))
-        producer_task = asyncio.create_task(producer_handler(websocket))
-        done, pending = await asyncio.wait(
-            [consumer_task, producer_task],
-            return_when=asyncio.FIRST_COMPLETED,
-        )
-        for task in pending:
-            task.cancel()
-
-    # WebSocketサーバーを開始する
-    async with websockets.serve(handler, "raspberrypi.local", 8765):
-        await asyncio.Future()
 
 def loop():
     speed = None
@@ -127,20 +99,12 @@ def loop():
     if prev_sensor_value == GPIO.LOW and sensor_value == GPIO.HIGH:
         on_sensor(None)
 
-async def async_loop():
-    while True:
-        loop()
-        await asyncio.sleep(0.01)
-
 def main():
     try:
         setup()
-        event_loop = asyncio.get_event_loop()
-        gather = asyncio.gather(
-            async_loop(),
-            websocket_serve(),
-        )
-        event_loop.run_until_complete(gather)
+        thread = threading.Thread(target=loop)
+        thread.start()
+        sio.wait()
     except KeyboardInterrupt:
         print('interrupted')
     except Exception as e:
@@ -154,6 +118,8 @@ def main():
             process_momo.terminate()
         if process_socat:
             process_socat.terminate()
+
+
 
 if __name__ == '__main__':
     main()
