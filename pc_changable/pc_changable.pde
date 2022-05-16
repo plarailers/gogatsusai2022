@@ -2,11 +2,6 @@ import processing.serial.*;
 
 Serial myPort;  // Create object from Serial class
 String inputText = "";
-double speed_id = 0.0;
-
-String getTime() {
-  return String.format("%02d:%02d:%02d", hour(), minute(), second());
-}
 
 void setup() {
   size(600, 400);
@@ -29,7 +24,7 @@ void setup() {
       }
     }
   }
-  println(getTime(), "Bluetooth connected");
+  println(millis(), "Bluetooth connected");
 }
 
 void draw() {
@@ -40,21 +35,12 @@ void draw() {
   text(inputText, width / 2, height / 2);
   while (myPort.available() > 0) {  // 車輪が1回転した信号が来たら
     int data = myPort.read();
-    println(getTime(), "recieve", data);
-    int input = pidCalc(speed_id);  // pid計算
-    // myPort.write(input);
+    println(millis(), "recieve", data);
   }
-  // stopCheck();
 }
 
 void sendSpeed(int tmp_speed) {
-  speed_id = speed_constrain(tmp_speed);
-  println(getTime(), "send", speed_id);
-  if (speed == 0.0) {  // 止まっているときは動かしてあげる
-    int input = INPUT_START;
-    println("input=INPUT_START");
-    myPort.write(input);
-  }
+  myPort.write(tmp_speed);
 }
 
 void keyPressed() {
@@ -69,13 +55,5 @@ void keyPressed() {
     if (inputText.length() < 3) {
       inputText += key;
     }
-  }
-}
-
-int speed_constrain(int tmp_speed) {
-  if (tmp_speed > 0) {
-    return (int)(SPEED_MIN + (SPEED_MAX - SPEED_MIN) * tmp_speed/255);
-  } else {
-    return 0;
   }
 }

@@ -1,17 +1,23 @@
-html, body{
+html,
+body {
   width: 100%;
   height: 100%;
 }
-body{
+
+body {
   background-color: #E6E6E6;
   padding: 0;
   margin: 0;
+  touch-action: none;
 }
+
 p {
   font-size: 14;
   margin: 0;
 }
-h1 {  /* タイトル */
+
+h1 {
+  /* タイトル */
   font-family: 'Kosugi Maru', sans-serif;
   font-size: 24px;
   color: #FFF;
@@ -20,58 +26,67 @@ h1 {  /* タイトル */
   margin-top: 0;
   margin-bottom: 0;
 }
-header{
+
+header {
   display: block;
   box-sizing: border-box;
-  background-color: #00B5EE;  /* プラレーラーズ公式カラー */
+  background-color: #00B5EE;
+  /* プラレーラーズ公式カラー */
   width: 100%;
   height: 50px;
   padding: 0;
   margin: 0;
 }
 
-#input_area{
+#input_area {
   display: block;
   box-sizing: border-box;
   width: 100%;
-  height: 63px;  /*<- 51+6+6*/
+  height: 63px;
+  /*<- 51+6+6*/
   padding: 6px 12px;
 }
+
 .input_text {
   display: block;
   float: left;
-	position: relative;
-	width: 75%;
-	margin: 0 0;
+  position: relative;
+  width: 75%;
+  margin: 0 0;
 }
+
 /* https://copypet.jp/692/ より */
 .input_text input[type=text] {
-	font: 15px/24px sans-serif;
-	box-sizing: border-box;
-	width: 100%;
-	margin: 8px 0;
-	padding: 0.3em;
-	transition: 0.3s;
-	border: 1px solid #1b2538;
-	border-radius: 4px;
-	outline: none;
+  font: 15px/24px sans-serif;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 8px 0;
+  padding: 0.3em;
+  transition: 0.3s;
+  border: 1px solid #1b2538;
+  border-radius: 4px;
+  outline: none;
 }
+
 .input_text input[type=text]:focus {
-	border-color: #00B5EE;
+  border-color: #00B5EE;
 }
+
 .input_text input[type=text] {
-	padding-left: 40px;
+  padding-left: 40px;
 }
+
 .input_text i {
-	position: absolute;
-	top: 8px;
-	left: 0;
-	padding: 9px 8px;
-	transition: 0.3s;
-	color: #aaaaaa;
+  position: absolute;
+  top: 8px;
+  left: 0;
+  padding: 9px 8px;
+  transition: 0.3s;
+  color: #aaaaaa;
 }
-.input_text input[type=text]:focus + i {
-	color: #00B5EE;
+
+.input_text input[type=text]:focus+i {
+  color: #00B5EE;
 }
 
 .input_button {
@@ -87,10 +102,12 @@ header{
   margin: 8px 1% 4px 1%;
   padding: 0.3em 0;
 }
+
 .input_button:hover {
   background-color: #4BD4FF;
   border-bottom: solid 4px #00B5EE;
 }
+
 .input_button:active {
   -webkit-transform: translateY(4px);
   transform: translateY(4px);
@@ -98,28 +115,32 @@ header{
   margin-bottom: 8px;
 }
 
-#message_area{
+#message_area {
   display: block;
   box-sizing: border-box;
   width: 100%;
   padding: 0px 12px;
 }
+
 p#message {
   display: inline-block;
   padding-left: 2px;
   font-size: 15px;
 }
+
 #message_icon {
-	top: 0;
-	left: 0;
-	padding: 0px 8px;
+  top: 0;
+  left: 0;
+  padding: 0px 8px;
   color: #888;
 }
+
 .loader {
   display: inline-block;
   padding: 0px 8px;
   visibility: hidden;
 }
+
 .ball-pulse>div {
   width: 4px;
   height: 4px;
@@ -128,20 +149,23 @@ p#message {
 }
 
 
-#content{
+#content {
   box-sizing: border-box;
   width: 100%;
   height: calc(100% - 150px);
   padding: 12px;
 }
-#controller{
+
+#controller {
   position: relative;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  margin: 0 auto;  /* 中央揃え */
+  margin: 0 auto;
+  /* 中央揃え */
 }
-#movie{
+
+#movie {
   display: block;
   float: left;
   box-sizing: border-box;
@@ -150,18 +174,46 @@ p#message {
   height: 100%;
   padding: 0;
 }
-iframe{
+
+iframe {
   display: block;
   width: 100%;
   height: 100%;
   margin: 0 auto;
 }
-#instruction{
+
+#instruction {
   position: absolute;
   width: 75%;
 }
 
-#mascon_area{
+#signal_img {
+  display: block;
+  position: absolute;
+  left: 70%;
+  width: 5%
+}
+
+#distance_area {
+  display: block;
+  position: absolute;
+  top: 30%;
+  right: 25%;
+  padding: 3px;
+  color: white;
+  background-color: black;
+}
+
+#distance_text {
+  text-align: right;
+  font-size: 12px;
+}
+#distance_value {
+  text-align: right;
+  font-size: 14px;
+}
+
+#mascon_area {
   display: block;
   float: left;
   box-sizing: border-box;
@@ -172,11 +224,11 @@ iframe{
   width: 23%;
   height: 98%;
   padding: 0;
-  margin: calc(1% * 27/64) 1% ;
+  margin: calc(1% * 27/64) 1%;
 }
 
 /* マスコン */
-#mascon{
+#mascon {
   -webkit-appearance: none;
   background: none;
   padding: 0;
@@ -184,12 +236,15 @@ iframe{
   margin-top: 0;
   margin-left: 0;
   transform: rotate(-90deg);
-  pointer-events: none;  /* 操作不可 */
+  pointer-events: none;
+  /* 操作不可 */
 }
-#mascon:focus{
+
+#mascon:focus {
   outline: none;
 }
-#mascon::-webkit-slider-thumb{
+
+#mascon::-webkit-slider-thumb {
   -webkit-appearance: none;
   background: #000;
   box-shadow: 0px 0px 3px #000;
@@ -198,7 +253,8 @@ iframe{
   width: 20px;
   margin-top: -35px;
 }
-#mascon::-moz-range-thumb{
+
+#mascon::-moz-range-thumb {
   background: #000;
   box-shadow: 0px 0px 3px #000;
   border-radius: 30%;
@@ -206,23 +262,27 @@ iframe{
   width: 20px;
   margin-top: -35px;
 }
+
 /* 横軸 */
-#mascon::-webkit-slider-runnable-track{
+#mascon::-webkit-slider-runnable-track {
   background: #888;
   box-shadow: 0px 0px -5px #AAA;
   height: 10px;
 }
-#mascon::-moz-range-track{
+
+#mascon::-moz-range-track {
   background: #888;
   box-shadow: 0px 0px -5px #AAA;
   height: 10px;
 }
-#mascon::-ms-track{
+
+#mascon::-ms-track {
   background: #888;
   box-shadow: 0px 0px -5px #AAA;
   height: 10px;
 }
+
 /* 現在の数値を非表示 */
-#mascon::-ms-tooltip{
+#mascon::-ms-tooltip {
   display: none;
 }

@@ -13,7 +13,7 @@ int prev_sensor_value = LOW;
 
 void setup() {
   SerialBT.begin("ESP32-Dr.");
-  ledcSetup(0, 12800, 8);
+  ledcSetup(0, 700, 8);
   ledcAttachPin(INPUT_PIN, 0);
   Serial.begin(115200);
   pinMode(4, INPUT);
@@ -32,5 +32,6 @@ void loop(){
   sensor_value = digitalRead(SENSOR_PIN);
   if (prev_sensor_value == LOW && sensor_value == HIGH) {
     SerialBT.write('o');
+    delay(3); //低速運転時のチャタリングを防止。
   }
 }
